@@ -11,6 +11,8 @@ namespace TimeZones
     {
         ReadOnlyCollection<TimeZoneInfo> zones = TimeZoneInfo.GetSystemTimeZones();
         TimeZone curTimeZone = TimeZone.CurrentTimeZone;
+        private bool flag = true;
+       
 
         public Form1()
         {
@@ -47,7 +49,7 @@ namespace TimeZones
 
             Task task = new Task(() =>
             {
-                while (true)
+                while (flag)
                 {
                     WorkOutTime();
                     Thread.Sleep(1000);
@@ -56,6 +58,7 @@ namespace TimeZones
             task.Start();
 
             InitializeControlValues();
+            lbl_other_tz.Text = cmbobx_tzones.Text;
         }
 
         private void btn_local_tz_Click(object sender, EventArgs e)
@@ -83,7 +86,7 @@ namespace TimeZones
                 // Difference between standard time and the daylight-saving time.  
                 TimeZoneInfo localZone = TimeZoneInfo.Local;
                 string answer = (localZone.BaseUtcOffset >= TimeSpan.Zero) ? "later" : "earlier";
-                lbl_time_info.Text = "The time now is " + dl.Delta + " (hh:mm:ss) " + answer + " than UTC.";
+                lbl_time_info.Text = "Local time now is " + dl.Delta + " (hh:mm:ss) " + answer + " than UTC.";
 
                 lbl_UTC.Text = curUTC.ToString();
                 lbl_local_time.Text = DateTime.Now.ToString();
@@ -110,18 +113,48 @@ namespace TimeZones
 
         private void cmbobx_tzones_SelectedIndexChanged(object sender, EventArgs e)
         {
+            lbl_other_tz.Text = cmbobx_tzones.Text;
             WorkOutTime();
         }
 
         private void btn_exit_Click(object sender, EventArgs e)
         {
+            flag = false;
+            Thread.Sleep(50);
             SaveSettings();
             Close();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            flag = false;
             SaveSettings();
+            Thread.Sleep(50);
+        }
+
+        private void btn_calculate_Click(object sender, EventArgs e)
+        {
+            TimeSpan diff = TimeSpan.Zero;
+
+            DateTime dt = dtpick_set_date_time_1.Value.Date + dtpick_set_date_time_2.Value.TimeOfDay;
+
+            DateTime localdt = DateTime.Parse(lbl_local_time.Text);
+            DateTime Otherdt = DateTime.Parse(lbl_time_in_tz.Text);
+
+            if (rdobtn_to_local.Checked)
+            {
+                //To local time
+               diff = Otherdt.Subtract(localdt);
+               lbl_result_time.Text = dt.Subtract(diff).ToString();
+
+            }
+            else
+            {
+                // From local time
+                diff = localdt.Subtract(Otherdt);
+                lbl_result_time.Text = dt.Subtract(diff).ToString();
+            }
+
         }
     }
 }
