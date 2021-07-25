@@ -1,4 +1,6 @@
 # Time-Zone-Calculator
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+
 This small app will get the timezone information from your OS. 
 
 It will then show some stats about the zone you are in, like daylight saving etc. 
